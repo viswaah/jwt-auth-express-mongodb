@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import userRoute from "./routes/userRoute";
+import { errorHandler } from "./middlewares/errorHandler";
 import "dotenv/config";
 import connectDB from "./utils/connectdb";
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/user", userRoute);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Listening at port: ${PORT}`);

@@ -1,5 +1,5 @@
 import User from "../models/user";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 interface SignUpRequest extends Request {
   body: {
@@ -12,26 +12,24 @@ interface SignUpRequest extends Request {
 
 // @route POST /api/user/signup
 // @access public
-export const signUp = async (req: SignUpRequest, res: Response) => {
+export const signUp = async (
+  req: SignUpRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const { name, email, password, confirmPassword } = req.body;
   if (!name || !email || !password || !confirmPassword) {
-    res.status(400).json({
-      error: true,
-      message: "All fields are required",
-    });
+    res.status(400);
+    return next(new Error("All fields are required"));
   } else if (password !== confirmPassword) {
-    res.status(400).json({
-      error: true,
-      message: "Password doesn't match",
-    });
+    res.status(400);
+    return next(new Error("Password does not match"));
   }
   try {
     const userExist = await User.findOne({ email });
     if (userExist) {
-      res.status(400).json({
-        error: true,
-        message: "User already exists",
-      });
+      res.status(400);
+      return next(new Error("User already exists"));
     } else {
       const newUser = await User.create({
         name,
@@ -45,9 +43,6 @@ export const signUp = async (req: SignUpRequest, res: Response) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({
-      error: true,
-      message: "Unknown error occured",
-    });
+    return next(new Error("Unknown error occurred"));
   }
 };
