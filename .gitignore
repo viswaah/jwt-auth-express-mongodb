@@ -1,0 +1,23 @@
+node_modules/
+build/
+
+# cache files
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+.eslintcache
+.cache
+.parcel-cache
+.npm
+
+# vscode files
+.vscode
+
+# env files
+.env
+.env.test
+.custom-env
+
+# log files
+yarn-error.log
+yarn-debug.log
