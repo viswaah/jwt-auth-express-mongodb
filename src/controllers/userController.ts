@@ -1,5 +1,7 @@
 import User from "../models/user";
+import { genSalt, hash, compare } from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
+import "dotenv/config";
 
 interface SignUpRequest extends Request {
   body: {
@@ -31,10 +33,12 @@ export const signUp = async (
       res.status(400);
       return next(new Error("User already exists"));
     } else {
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(password, salt);
       const newUser = await User.create({
         name,
         email,
-        password,
+        password: hashedPassword,
       });
       res.status(200).json({
         error: false,
