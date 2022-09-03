@@ -1,5 +1,5 @@
-import express, { Express, Request, Response } from "express";
-import mongoose from "mongoose";
+import express, { Express } from "express";
+import userRoute from "./routes/userRoute";
 import "dotenv/config";
 import connectDB from "./utils/connectdb";
 
@@ -9,9 +9,10 @@ const MONGODB_URL: string = process.env.MONGODB_URL || "";
 
 connectDB(MONGODB_URL);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello world");
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/api/user", userRoute);
 
 app.listen(PORT, () => {
   console.log(`Listening at port: ${PORT}`);
