@@ -6,6 +6,7 @@ import "dotenv/config";
 import { createEmailToken } from "../utils/createEmailToken";
 import { sendEmail } from "../utils/mailer";
 import { Error } from "mongoose";
+import jwt, { Jwt } from "jsonwebtoken";
 
 interface SignUpRequest extends Request {
   body: {
@@ -98,6 +99,7 @@ export const signIn = async (
       res.status(200).json({
         error: false,
         message: "Login success",
+        token: generateToken(user.userId),
       });
     } else {
       res.status(400);
@@ -149,4 +151,27 @@ export const activate = async (
   } catch (err) {
     return next(new Error("Unknown error occurred"));
   }
+};
+
+// @route GET /api/user/getme
+// @access private
+export const getMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = res.locals;
+  const user = await User.findOne({ userId }).select("-password");
+  if (!user) {
+    res.status(400);
+    return next(new Error("No user found"));
+  }
+  res.status(200).json(user);
+};
+
+const generateToken = (id: string): string => {
+  const JWT_SECRET = process.env.JWT_SECRET || "okayvis";
+  return jwt.sign({ id }, JWT_SECRET, {
+    expiresIn: "30d",
+  });
 };

@@ -5,6 +5,7 @@ declare global {
       PORT?: string;
       NODE_ENV: "production" | "development" | "test";
       MONGODB_URL: string;
+      JWT_SECRET: string;
     }
   }
 }
